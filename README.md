@@ -1,5 +1,5 @@
 
-# 🔭 Sentinel
+# Sentinel
 
 Sentinel is an advanced AI-powered surveillance system designed to monitor live camera feeds and detect abnormal activities such as **fighting**, **fire**, and **accidents**, along with normal behavior. Built using PyQt5 and integrated with deep learning models, Sentinel provides a sleek GUI, real-time predictions, alert visualizations, and camera stream management.
 
