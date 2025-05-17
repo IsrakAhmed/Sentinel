@@ -38,8 +38,8 @@ Sentinel is an advanced AI-powered surveillance system designed to monitor live 
 
 Each connected camera stream is handled in its own worker thread. Frames are periodically passed through a deep learning model that returns:
 
-- \`class_name\`: one of \`[normal, fire, fighting, accident]\`
-- \`confidence\`: prediction confidence percentage
+- `Class Name`: one of `[Normal, Fire, Fighting, Accident]`
+- `Confidence`: Prediction confidence percentage
 
 The UI updates in real-time, logging events and showing graph trends based on prediction data.
 
