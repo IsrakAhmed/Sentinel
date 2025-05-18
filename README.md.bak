@@ -66,14 +66,3 @@ Developed by **Israk Ahmed**
 Thanks to open-source communities for PyQt5, OpenCV, and all contributors to computer vision research.
 
 ---
-
-
-## Install Dependencies
-
-To install all required Python packages, run the following command:
-
-```bash
-pip install -r requirements.txt
-
-
----
