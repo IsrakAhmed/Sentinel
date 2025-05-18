@@ -1,0 +1,9 @@
+tensorflow>=2.11.0
+keras>=2.11.0
+numpy
+opencv-python
+imutils
+PyQt5>=5.15.0
+pyqtgraph
+configparser
+matplotlib
