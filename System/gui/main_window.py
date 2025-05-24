@@ -16,6 +16,7 @@ from gui.history_panel import HistoryPanel
 from gui.add_camera_dialog import AddCameraDialog
 from gui.developer_info import DeveloperInfoDialog
 from core.camera_manager import CameraManager
+from utils.messageSender import SmsSender
 
 class MainWindow(QMainWindow):
     def __init__(self, load_model):
@@ -29,6 +30,9 @@ class MainWindow(QMainWindow):
         
         # Initialize camera manager
         self.camera_manager = CameraManager()
+        
+        # Initialize SMS sender
+        self.sms_sender = SmsSender()
         
         # Set up UI
         self.setup_ui()
@@ -94,7 +98,7 @@ class MainWindow(QMainWindow):
         camera_layout = QVBoxLayout(self.camera_container)
         camera_layout.setContentsMargins(0, 0, 0, 0)
         
-        self.camera_view = CameraView(camera_manager=self.camera_manager, load_model=self.load_model)
+        self.camera_view = CameraView(camera_manager=self.camera_manager, load_model=self.load_model, message_sender=self.sms_sender)
         camera_layout.addWidget(self.camera_view)
         
         # Right panel: tabs for different functions

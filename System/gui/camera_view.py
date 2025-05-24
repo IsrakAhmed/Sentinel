@@ -11,6 +11,8 @@ from collections import deque
 import threading
 import configparser
 import os
+import time
+
 
 class CameraViewport(QLabel):
     """Widget for displaying a single camera stream with overlaid information"""
@@ -177,10 +179,12 @@ class PredictionWorker(QThread):
 class CameraView(QWidget):
     """Widget for displaying multiple camera streams"""
     
-    def __init__(self, camera_manager=None, setting_panel=None, load_model=None):
+    def __init__(self, camera_manager=None, setting_panel=None, load_model=None, message_sender=None):
         super().__init__()
         self.camera_manager = camera_manager
         self.settings_panel = setting_panel
+        self.message_sender = message_sender  # For sending SMS alerts
+        self.last_sms_time = {}
         self.cameras = {}  # Dictionary of camera viewports
         self.layout_mode = "grid"  # or "single"
         
@@ -237,6 +241,20 @@ class CameraView(QWidget):
         self.timer.start(33)  # ~30 FPS
         
     
+    def should_send_sms(self, camera_name, interval_minutes=5):
+        now = time.time()
+        
+        last = self.last_sms_time.get(camera_name, 0)
+        interval_seconds = interval_minutes * 60
+        
+        if now - last > interval_seconds:
+            self.last_sms_time[camera_name] = now
+            return True
+        
+        return False
+
+    
+    
     def load_config(self):
         """Load configuration settings from file"""
         config_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'config', 'sentinel_settings.ini')
@@ -259,6 +277,10 @@ class CameraView(QWidget):
                 if 'DetectionSettings' in config:
                     if 'activity_classes' in config['DetectionSettings']:
                         self.CLASSES_LIST = [cls.strip() for cls in config['DetectionSettings']['activity_classes'].split(",")]
+                    if 'phone_number' in config['DetectionSettings']:
+                        self.phone_number = config['DetectionSettings']['phone_number'].strip()
+                        if self.settings_panel:
+                            self.settings_panel.phone_number.setText(self.phone_number)
                 
                 # Load UI settings
                 if 'UISettings' in config:
@@ -524,6 +546,20 @@ class CameraView(QWidget):
     def handle_prediction_result(self, camera_name, class_name, text, confidence):
         """Handle prediction results from worker thread"""
         self.camera_predictions[camera_name] = {"text": text, "confidence": confidence}
+        
+        phone_number = self.phone_number if hasattr(self, 'phone_number') else None
+        if not phone_number:
+            print("No phone number configured for SMS alerts.")
+            return
+        
+        #print(f"Phone number for SMS: {phone_number}")
+        #print(f"Prediction for {camera_name}: {text} ({confidence:.1f}%)")
+        
+        if self.message_sender and "Abnormal" in text and self.should_send_sms(camera_name, interval_minutes=5):
+            self.message_sender.send_sms(
+                phone_number = phone_number,
+                message=f"Alert from {camera_name}: {text} ({confidence:.1f}%) detected at {time.strftime('%H:%M:%S')}."
+            )
         
         
     def clean_up_worker(self, camera_name):

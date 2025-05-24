@@ -73,6 +73,9 @@ class SettingsPanel(QWidget):
         self.activity_classes = QLineEdit("accident, fighting, fire, normal")
         detection_layout.addRow("Activity Classes:", self.activity_classes)
         
+        self.phone_number = QLineEdit("01766687218")
+        detection_layout.addRow("Phone Number:", self.phone_number)
+        
         # Add groups to general tab
         general_layout.addWidget(model_group)
         general_layout.addWidget(detection_group)
@@ -230,6 +233,8 @@ class SettingsPanel(QWidget):
                         self.enable_notifications.setChecked(config['DetectionSettings'].getboolean('enable_notifications'))
                     if 'activity_classes' in config['DetectionSettings']:
                         self.activity_classes.setText(config['DetectionSettings']['activity_classes'])
+                    if 'phone_number' in config['DetectionSettings']:
+                        self.phone_number.setText(config['DetectionSettings']['phone_number'])
                 
                 # UI settings
                 if 'UISettings' in config:
@@ -281,7 +286,8 @@ class SettingsPanel(QWidget):
         config['DetectionSettings'] = {
             'use_gpu': str(self.use_gpu.isChecked()),
             'enable_notifications': str(self.enable_notifications.isChecked()),
-            'activity_classes': self.activity_classes.text()
+            'activity_classes': self.activity_classes.text(),
+            'phone_number': self.phone_number.text()
         }
         
         # UI settings
